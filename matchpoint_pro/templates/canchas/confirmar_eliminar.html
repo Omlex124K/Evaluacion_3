@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Baja Lógica</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: #f8fafc; text-align: center; padding-top: 5rem; }
+        .card { max-width: 450px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .btn { padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; display: inline-block; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-secondary { background-color: #cbd5e1; color: #1e293b; margin-right: 0.5rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="color:#b91c1c; margin-top:0;">¿Confirmar Baja Lógica?</h2>
+        <p>¿Estás seguro de que deseas desactivar del catálogo la cancha <strong>{{ cancha.nombre }} ({{ cancha.codigo }})</strong>?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <a href="{% url 'gestion_canchas' %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-danger">Confirmar Desactivación</button>
+        </form>
+    </div>
+</body>
+</html>

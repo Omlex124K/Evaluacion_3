@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador de Jornada - MatchPoint Pro</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+        }
+        .navbar {
+            background-color: #0f172a;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            color: #38bdf8;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 1.25rem;
+        }
+        .btn-back {
+            border: 1px solid #cbd5e1;
+            color: #cbd5e1;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .layout-reserva {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .panel-tabla {
+            flex: 2;
+            min-width: 300px;
+        }
+        .panel-totales {
+            flex: 1;
+            min-width: 280px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .card-dark {
+            background-color: #0f172a;
+            color: white;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+        th {
+            background-color: #1e293b;
+            color: white;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+        td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .badge-bloque {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .btn-clear {
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            background: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .row-total {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.75rem 0;
+            font-size: 0.95rem;
+        }
+        .total-destacado {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #f59e0b;
+            border-top: 1px solid #334155;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+        .btn-confirm {
+            width: 100%;
+            background-color: #f59e0b;
+            color: #0f172a;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'catalogo_publico' %}">MatchPoint Pro</a>
+        <a class="btn-back" href="{% url 'catalogo_publico' %}">Volver al Catálogo</a>
+    </nav>
+
+    <main class="container">
+        <h2 style="margin: 0 0 0.25rem 0; font-size: 1.75rem;">Planificador Temporal</h2>
+        <p style="color:#64748b; font-size:0.9rem; margin:0 0 2rem 0;">Estructura volátil almacenada temporalmente en memoria de sesión (<code>request.session</code>).</p>
+
+        {% if jornada %}
+        <div class="layout-reserva">
+            <div class="panel-tabla">
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cancha</th>
+                                <th>Bloque Asignado</th>
+                                <th style="text-align:right;">Tarifa</th>
+                                <th style="text-align:right;">Anexos</th>
+                                <th style="text-align:right;">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, item in jornada.items %}
+                            <tr>
+                                <td>
+                                    <span style="font-weight:bold; display:block;">{{ item.nombre }}</span>
+                                    <small style="color:#64748b; font-family:monospace;">{{ item.codigo }}</small>
+                                </td>
+                                <td><span class="badge-bloque">{{ item.bloque }}</span></td>
+                                <td style="text-align:right; color:#475569;">${{ item.tarifa }}</td>
+                                <td style="text-align:right; color:#475569;">${{ item.implementos }}</td>
+                                <td style="text-align:right; font-weight:bold;">${{ item.subtotal }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div style="text-align: right;">
+                        <a href="{% url 'limpiar_jornada' %}" class="btn-clear">Vaciar Planificador</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-totales">
+                <div class="card card-dark">
+                    <h3 style="margin:0 0 1rem 0; border-bottom:1px solid #334155; padding-bottom:0.5rem; color:#f59e0b;">Desglose Técnico</h3>
+                    <div class="row-total" style="color:#94a3b8;">
+                        <span>Total Neto:</span>
+                        <span style="color:white; font-family:monospace;">${{ total_neto }}</span>
+                    </div>
+                    <div class="row-total" style="color:#94a3b8;">
+                        <span>IVA Regulado (19%):</span>
+                        <span style="color:white; font-family:monospace;">${{ iva }}</span>
+                    </div>
+                    <div class="row-total total-destacado">
+                        <span>Total General:</span>
+                        <span style="font-family:monospace;">${{ total_general }}</span>
+                    </div>
+                    <button class="btn-confirm" onclick="alert('Simulación de reserva temporal completada con éxito.')">Confirmar Itinerario</button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="text-align:center; padding: 3rem;">
+            <h4 style="margin:0 0 0.5rem 0; font-size:1.25rem;">Planificador sin registros</h4>
+            <p style="color:#64748b; margin-bottom:1.5rem;">No has seleccionado bloques horarios ni implementos todavía.</p>
+            <a href="{% url 'catalogo_publico' %}" class="btn-clear" style="text-decoration:none; padding: 0.5rem 1.5rem; border-radius:50px; background-color:#0f172a; color:white; border:none;">Explorar Catálogo</a>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>
