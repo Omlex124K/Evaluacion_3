@@ -23,30 +23,31 @@ Siga este orden estricto en la terminal de PowerShell para levantar y evaluar la
 ```powershell
 cd C:\Users\chilab\Desktop\matchpoint_pro
 python -m venv .venv
-.venv\Scripts\pip install django pillow python-dotenv
+.venv\Scripts\activate
+pip install django pillow python-dotenv
 ```
 
-### Paso 2: Inicializar el Entorno de Django
+### Paso 2: Inicializar el Entorno de Django y la Aplicación
 ```powershell
-.venv\Scripts\django-admin startproject config .
-.venv\Scripts\python manage.py startapp canchas
+django-admin startproject config .
+python manage.py startapp canchas
 ```
 
 ### Paso 3: Ejecutar Migraciones del Modelo de Datos
 ```powershell
-.venv\Scripts\python manage.py makemigrations
-.venv\Scripts\python manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
 ```
 
 ### Paso 4: Poblado Automatizado de la Base de Datos (Módulo 1.4)
-Se diseñó un comando personalizado para inyectar los datos semilla requeridos:
+Se diseñó un comando personalizado para inyectar los datos semilla requeridos (4 disciplinas y 8 canchas operativas):
 ```powershell
-.venv\Scripts\python manage.py poblar_datos
+python manage.py poblar_datos
 ```
 
 ### Paso 5: Ejecución del Servidor Local
 ```powershell
-.venv\Scripts\python manage.py runserver
+python manage.py runserver
 ```
 * **Acceso Público:** http://127.0.0
 * **Acceso Backoffice Protegido:** http://127.0.0admin/ (Usuario: `admin` | Clave: `admin123`)
@@ -54,28 +55,35 @@ Se diseñó un comando personalizado para inyectar los datos semilla requeridos:
 ---
 
 ## 3. Verificación de Pilares Obligatorios Cumplidos
-1. **Aislamiento y Seguridad:** Variables desacopladas en `.env` mediante `python-dotenv`. Archivos temporales excluidos mediante `.gitignore`.
-2. **Capa de Datos ORM:** Uso de `models.PROTECT` para integridad referencial y `MinValueValidator(0)` para denegar tarifas negativas.
-3. **Panel Operativo a Medida:** Identidad corporativa corporativizada y grillas de datos con edición rápida (`list_editable`).
-4. **Manejo de Sesión Volátil:** Operaciones matemáticas complejas calculadas dinámicamente en `request.session` sin persistencia inmediata.
+1. **Aislamiento y Seguridad:** Variables desacopladas en `.env` mediante `python-dotenv`. Archivos temporales, bases de datos y carpetas multimedia excluidos mediante `.gitignore`.
+2. **Capa de Datos ORM:** Uso de `models.PROTECT` para integridad referencial en disciplinas y `MinValueValidator(0)` para denegar tarifas negativas en canchas.
+3. **Panel Operativo a Medida:** Identidad corporativa personalizada en `admin.py` y grillas de datos optimizadas con filtros laterales y edición rápida (`list_editable`).
+4. **Manejo de Sesión Volátil:** Operaciones matemáticas complejas calculadas dinámicamente en `request.session` sin persistencia inmediata para simular el cotizador de jornadas.
 
 ---
 
 ## 🤖 4. Bitácora de Uso Técnico y Ético de Inteligencia Artificial (Módulo 4)
 
-En cumplimiento con las directrices institucionales, se documenta la asistencia técnica de IA en el desarrollo del backend:
+En cumplimiento con el criterio de **utilización asistida de IA**, se documenta la trazabilidad del desarrollo colaborativo entre el estudiante y el asistente de IA, detallando la resolución de bugs arquitectónicos durante la sesión de codificación:
 
-### Caso 1: Optimización de Consultas Relacionales (ORM)
-*   **Prompt Utilizado:** *"¿Cómo puedo optimizar una consulta en Django ORM para un catálogo público que tiene una relación ForeignKey hacia otra tabla y evitar el problema de N+1 consultas?"*
-*   **Respuesta Técnica:** Se sugirió el uso del método `.select_related('disciplina')` para realizar un `JOIN` SQL directo en la base de datos.
-*   **Adaptación:** Se implementó directamente en la vista `catalogo_publico` y en el listado del backoffice de `views.py`.
+### Caso 1: Diagnóstico de Rutas y Estructura de Carpetas en Django
+*   **Problemática / Error:** Django lanzaba errores de renderizado y no encontraba las plantillas HTML debido a que VS Code colapsaba la vista visual de directorios vacíos mediante *Compact Folders* (ayuda visual que unía los nombres de carpetas consecutivas con barras invertidas `templates\canchas`), sumado a un desajuste en la configuración de la tupla `DIRS` en el archivo `settings.py`.
+*   **Prompt Utilizado:** *"Al crear mi carpeta de plantillas en la raíz de mi proyecto de Django, VS Code la agrupa visualmente en una sola línea como 'templates\canchas' y el servidor no me reconoce las vistas de mis HTML. ¿Qué está fallando en la arquitectura de mis carpetas o en mi settings.py?"*
+*   **Respuesta de la IA:** Explicó que el editor colapsa visualmente rutas secuenciales cuando no tienen archivos hermanos directos en la raíz, pero advirtió que la tupla de configuración del motor de plantillas en `settings.py` debía apuntar dinámicamente usando `BASE_DIR / 'templates'` para que Django rastreara correctamente el árbol exterior.
+*   **Adaptación/Solución:** Se corrigió el bloque `TEMPLATES` en `config/settings.py` para mapear la ruta global y se validó físicamente la separación jerárquica de los directorios.
 
-### Caso 2: Seguridad en Formularios Web (ModelForm)
+### Caso 2: Inyección de Estilos Locales Seguros contra Bloqueos de Red (Falla de CDN)
+*   **Problemática / Error:** Al importar los estilos de Bootstrap 5 mediante servidores CDN tradicionales (`jsdelivr` / `cdnjs`), los proxies locales o filtros de red de la terminal de la institución educativa bloqueaban y recortaban las URLs de los archivos `.css`, dejando la aplicación web completamente plana (hoja en blanco sin estilos).
+*   **Prompt Utilizado:** *"Los enlaces CDN oficiales de Bootstrap 5 no cargan en mis templates de Django debido a restricciones del entorno de red de mi laboratorio, rompiendo toda la interfaz responsiva. ¿Cómo puedo asegurar el diseño visual de Bootstrap sin depender de peticiones externas o internet?"*
+*   **Respuesta de la IA:** Sugirió inyectar las clases y estilos utilitarios esenciales de Bootstrap (estructuras de grillas, diseño de tarjetas, tipografía y badges dinámicos) incrustándolos directamente dentro de etiquetas nativas `<style>` en la cabecera de cada plantilla HTML.
+*   **Adaptación/Solución:** Se reescribieron las plantillas `catalogo.html` y `jornada.html` con una capa CSS embebida que emula los componentes de Bootstrap 5, asegurando el renderizado inmediato sin conexiones externas.
+
+### Caso 3: Seguridad en Formularios Web (ModelForm) y Evitación de Duplicados
 *   **Prompt Utilizado:** *"Necesito crear un formulario ModelForm en Django que valide que un código alfanumérico no esté duplicado al editar y que un valor entero no sea negativo usando métodos clean."*
-*   **Respuesta Técnica:** La IA estructuró los métodos específicos `clean_codigo()` y `clean_tarifa_bloque()` levantando excepciones del tipo `forms.ValidationError`.
-*   **Adaptación:** Bloque integrado por completo en el archivo `canchas/forms.py` para blindar la operación Create y Update.
+*   **Respuesta de la IA:** Estructuró los métodos específicos `clean_codigo()` y `clean_tarifa_bloque()` levantando excepciones del tipo `forms.ValidationError` para interceptar datos anómalos antes de que lleguen a la base de datos.
+*   **Adaptación/Solución:** Bloque integrado por completo en el archivo `canchas/forms.py` para blindar las operaciones de creación y actualización en el frontend.
 
-### Caso 3: Control de Estado In-Memory (request.session)
+### Caso 4: Control de Estado In-Memory (request.session) y Aislamiento de Clientes
 *   **Prompt Utilizado:** *"¿Cómo estructurar un diccionario dentro de request.session en Django para almacenar un itinerario temporal con desgloses matemáticos de IVA (19%) sin persistencia en base de datos?"*
-*   **Respuesta Técnica:** Explicación del comportamiento de serialización JSON de las sesiones de Django y la obligatoriedad de marcar la sesión como modificada o reasignar el diccionario.
-*   **Adaptación:** Lógica aplicada en las funciones `agregar_a_jornada` y `ver_jornada` dentro de las vistas de negocio.
+*   **Respuesta de la IA:** Explicó el comportamiento de serialización JSON de las sesiones de Django y cómo el `SessionMiddleware` asocia un hash único en una cookie por cada navegador, garantizando que el planificador de un cliente sea inaccesible para otro.
+*   **Adaptación/Solución:** Lógica implementada en las vistas `agregar_a_jornada` y `ver_jornada` dentro de `canchas/views.py` para aislar el flujo de cálculo económico de Neto, IVA y Total.
